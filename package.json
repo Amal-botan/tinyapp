@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/Amal-botan/tinyapp/issues"
   },
-  "homepage": "https://github.com/Amal-botan/tinyapp#readme"
+  "homepage": "https://github.com/Amal-botan/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
