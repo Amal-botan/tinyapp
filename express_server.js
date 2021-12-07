@@ -18,8 +18,8 @@ function generateRandomString() {
   let shortURL = "";
   let randomChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"; 
   let randomNum = "0123456789"
-  for (let i = 0; i < 5; i++){
-    shortURL += randomChars.charAt(Math.floor(Math.random() * randomChars.length)) + randomNum.charAt(Math.floor(Math.random() * randomChars.length));
+  for (let i = 0; i < 3; i++){
+    shortURL += randomChars.charAt(Math.floor(Math.random() * randomChars.length)) + randomNum.charAt(Math.floor(Math.random() * randomNum.length - 1));
   }
     return  shortURL;
 }
@@ -52,8 +52,18 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
+  let shortURL = generateRandomString();
+  let longURL = req.body.longURL;
   console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  res.send(`Your shortlink: ${shortURL}, Your longlink: ${longURL}`);         // Respond with 'Ok' (we will replace this)
+  urlDatabase[shortURL] = longURL;
+});
+
+app.get("/u/:shortURL", (req, res) => {
+  console.log(req.params.shortURL)
+  const shortURL = req.params.shortURL;
+  const longURL = urlDatabase[shortURL];
+  res.redirect(longURL);
 });
 
 
