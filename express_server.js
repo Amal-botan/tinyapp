@@ -87,7 +87,7 @@ app.post("/urls", (req, res) => {
   console.log(req.body);  // Log the POST request body to the console
   res.send(`Your shortlink: ${shortURL}, Your longlink: ${longURL}`);         // Respond with 'Ok' (we will replace this)
   urlDatabase[shortURL] = longURL;
-  //if username
+ 
 });
 
 //req.params for GET 
@@ -112,15 +112,43 @@ app.post("/urls/:shortURL", (req, res) => {
   res.redirect("/urls");
 });
 
-app.post("/login", (req, res) => {
+//updateed login to check if the username and password exist or match
+app.post('/login', (req, res) => {
+  // console.log('req.body', req.body);
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if (!email || !password) {
+    return res.status(400).send("email and password cannot be blank");
+  }
+
+  const user = findUserByEmail(email);
+  console.log('user', user);
+  
+  if(!user){
+    return res.status(400).send("a user with that email does not exist")
+  }
+
+  if(user.password !== password) {
+    return res.status(400).send('password does not match')
+  }
+
+  res.cookie('user_id', user.id);
+  res.redirect('/urls')
+})
+
+
+app.get("/login", (req, res) => {
   console.log(req.body)
-  res.cookie("username", req.body.username);
-  res.redirect("/urls");
+ 
+  const templateVarss = { display: users[req.cookies.user_id], urls: urlDatabase };
+  res.render("urls_login",templateVarss);
 });
 
+
 app.post("/logout", (req, res) => {
-  console.log(req.cookies.username)
-  res.clearCookie("username");
+  console.log(users[req.cookies.user_id])
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
