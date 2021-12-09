@@ -54,19 +54,20 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVarss = { display: req.cookies.username, urls: urlDatabase };
+  const templateVarss = { display: users[req.cookies.user_id], urls: urlDatabase };
   console.log(templateVarss);
   res.render("urls_index", templateVarss);
 }); 
 
 app.get("/urls/new", (req, res) => {
-  const templateVarss = { display: req.cookies.username, urls: urlDatabase };
+  const templateVarss = { display: users[req.cookies.user_id], urls: urlDatabase };
   res.render("urls_new",templateVarss);
 });
 
 //get u
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { display: req.cookies.username, shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
+  const templateVars = { display: users[req.cookies.user_id], shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
+  console.log(templateVars);
   res.render("urls_show", templateVars);
 });
 
@@ -116,7 +117,7 @@ app.post("/logout", (req, res) => {
 
 
 app.get("/register", (req, res) => {
-  const templateVarss = { display: req.cookies.username, urls: urlDatabase };
+  const templateVarss = { display: users[req.cookies.user_id], urls: urlDatabase };
   res.render("urls_registration",templateVarss);
 });
 
