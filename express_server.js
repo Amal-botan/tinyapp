@@ -25,11 +25,26 @@ function generateRandomString() {
     return  shortURL;
 }
 
+//global object for storing users
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
 
+
+//Home page 
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
-
+//json page fordatabase
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -99,13 +114,33 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
-// app.get("/login", (req, res) => {
-//   const templateVars = {
-//     username: req.cookies["username"],
-//     // ... any other vars
-//   };
-//   res.render("urls_index", templateVars);
-// });
+
+app.get("/register", (req, res) => {
+  const templateVarss = { display: req.cookies.username, urls: urlDatabase };
+  res.render("urls_registration",templateVarss);
+});
+
+//add a new user object to the global users object
+app.post("/register", (req, res) => {
+  userID = generateRandomString();
+  console.log(req.body.email,req.body.password)
+  email = req.body.email;
+  password = req.body.password;
+  users[userID] = {
+    id: userID,
+    email: email,
+    password: password
+  };
+  
+  console.log('users', users);
+
+  res.cookie("user_id", userID);
+  console.log(req.cookies.user_id);
+  res.redirect("/urls");
+});
+
+
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
