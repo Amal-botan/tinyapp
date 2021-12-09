@@ -3,8 +3,8 @@ const cookieParser = require('cookie-parser')
 const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
-
-
+const bcrypt = require('bcryptjs');
+const salt = bcrypt.genSaltSync(10);
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -42,7 +42,8 @@ const users = {
   "userRandomID": {
     id: "userRandomID", 
     email: "user@example.com", 
-    password: "purple-monkey-dinosaur"
+    password:"purple-monkey-dinosaur"
+    
   },
  "user2RandomID": {
     id: "user2RandomID", 
@@ -204,8 +205,9 @@ app.post('/login', (req, res) => {
   // console.log('req.body', req.body);
   const email = req.body.email;
   const password = req.body.password;
-
-  if (!email || !password) {
+  hashedPassword = bcrypt.hashSync(password, salt);
+  
+  if (!email || !hashedPassword) {
     return res.status(400).send("email and password cannot be blank");
   }
 
@@ -216,7 +218,7 @@ app.post('/login', (req, res) => {
     return res.status(400).send("a user with that email does not exist")
   }
 
-  if(user.password !== password) {
+  if(user.password !== hashedPassword) {
     return res.status(400).send('password does not match')
   }
 
@@ -252,6 +254,12 @@ app.post("/register", (req, res) => {
   console.log(req.body.email,req.body.password)
   email = req.body.email;
   password = req.body.password;
+  hashedPassword = bcrypt.hashSync(password, salt);
+
+  if (!bcrypt.compareSync(password, hashedPassword)) {
+    return  res.send("Password isn't hashed");
+  };
+
   if (!email || !password) {
     return res.status(400).send("email and password cannot be blank");
   }
@@ -265,7 +273,7 @@ app.post("/register", (req, res) => {
   users[userID] = {
     id: userID,
     email: email,
-    password: password
+    password: hashedPassword
   };
   
 
