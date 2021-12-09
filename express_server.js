@@ -39,6 +39,15 @@ const users = {
   }
 }
 
+const findUserByEmail = (email) => {
+  for(const userId in users) {
+    const user = users[userId];
+    if(user.email === email) {
+      return user;
+    }
+  }
+  return null;
+}
 
 //Home page 
 app.get("/", (req, res) => {
@@ -127,12 +136,23 @@ app.post("/register", (req, res) => {
   console.log(req.body.email,req.body.password)
   email = req.body.email;
   password = req.body.password;
+  if (!email || !password) {
+    return res.status(400).send("email and password cannot be blank");
+  }
+
+  const user = findUserByEmail(email);
+
+  if(user) {
+    return res.status(400).send("a user already exists with that email")
+  }
+
   users[userID] = {
     id: userID,
     email: email,
     password: password
   };
   
+
   console.log('users', users);
 
   res.cookie("user_id", userID);
